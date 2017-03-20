@@ -28,7 +28,7 @@ import java.util.Map;
  * Created by Nathen
  * On 2015/11/30 15:39
  */
-public class JCMediaManager implements TextureView.SurfaceTextureListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnSeekCompleteListener, MediaPlayer.OnErrorListener, MediaPlayer.OnInfoListener, MediaPlayer.OnVideoSizeChangedListener,CacheListener {
+public class JCMediaManager implements TextureView.SurfaceTextureListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnSeekCompleteListener, MediaPlayer.OnErrorListener, MediaPlayer.OnInfoListener, MediaPlayer.OnVideoSizeChangedListener, CacheListener {
     public static String TAG = "JieCaoVideoPlayer";
 
     private static JCMediaManager JCMediaManager;
@@ -258,17 +258,14 @@ public class JCMediaManager implements TextureView.SurfaceTextureListener, Media
         if (httpProxyCacheServer == null)
             httpProxyCacheServer = new HttpProxyCacheServer.Builder(context.getApplicationContext())
                     .maxCacheSize(200 * 1024 * 1024) //200M
-                    .cacheDirectory(getVideoCache())
+                    .cacheDirectory(getVideoCache(context))
                     .build();
         return httpProxyCacheServer;
     }
 
-    private File getVideoCache() {
-        File fileBase = new File(Environment.getExternalStorageDirectory() + File.separator + "abc");
-        if (!fileBase.exists()) {
-            fileBase.mkdir();
-        }
-        File videoCache = new File(fileBase, "cache");
+    private File getVideoCache(Context context) {
+        File videoCache = new File(Environment.getExternalStorageDirectory()
+                + File.separator + context.getApplicationInfo().packageName);
         if (!videoCache.exists()) {
             videoCache.mkdir();
         }
