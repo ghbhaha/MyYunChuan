@@ -14,7 +14,6 @@ public class Constant {
     private static int ALL_MASK = -99;
 
 
-
     public static String getImgUrl(Context context, String id) {
         return getBaseUrl(context) + "/mov/" + id + "/1.jpg";
     }
@@ -31,19 +30,26 @@ public class Constant {
         return SPUtils.get(context, "ip", "http://202.196.222.201").toString();
     }
 
-    public static String getUrlFormat(Context context,VideoType videoType, FilmTypeDetail filmTypeDetail, TvTypeDetail tvTypeDetail, int pageIndex) {
+    public static String formatDownUrl(Context context, String orgUrl) {
+        return getBaseUrl(context) + "/kuu"
+                + orgUrl.charAt(0)
+                + "/"
+                + orgUrl.substring(orgUrl.lastIndexOf("\\") + 1);
+    }
+
+    public static String getUrlFormat(Context context, VideoType videoType, FilmTypeDetail filmTypeDetail, TvTypeDetail tvTypeDetail, int pageIndex) {
         String endUrl = "";
         switch (videoType) {
             case DIANYING:
                 if (filmTypeDetail.typeDetailCode != ALL_MASK)
-                    endUrl= String.format(URL_FORMAT_LOCATION, filmTypeDetail.typeDetailCode, filmTypeDetail.typeDetailCode);
+                    endUrl = String.format(URL_FORMAT_LOCATION, filmTypeDetail.typeDetailCode, filmTypeDetail.typeDetailCode);
                 break;
             case DAINSHIJU:
                 if (tvTypeDetail.typeDetailCode != ALL_MASK)
                     endUrl = String.format(URL_FORMAT_LOCATION, tvTypeDetail.typeDetailCode, tvTypeDetail.typeDetailCode);
                 break;
         }
-        if (TextUtils.isEmpty(endUrl)){
+        if (TextUtils.isEmpty(endUrl)) {
             endUrl = String.format(URL_FORMAT_ALL, videoType.typeCode);
         }
 

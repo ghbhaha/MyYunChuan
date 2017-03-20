@@ -9,6 +9,17 @@
     tools:context="suda.myyunchuan.ui.VideoDetailActivity"
     tools:showIn="@layout/activity_video_detail">
 
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
+        <com.wefika.flowlayout.FlowLayout
+            android:orientation="vertical"
+            android:id="@+id/url_content"
+            android:gravity="start|top"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"></com.wefika.flowlayout.FlowLayout>
+
+    </ScrollView>
 
 </RelativeLayout>

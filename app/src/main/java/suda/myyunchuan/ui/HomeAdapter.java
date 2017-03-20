@@ -39,13 +39,14 @@ public class HomeAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         VideoViewHolder videoViewHolder = (VideoViewHolder) holder;
-        VideoInfo videoInfo = mVideoInfos.get(position);
+        final VideoInfo videoInfo = mVideoInfos.get(position);
         videoViewHolder.mTvTitle.setText(videoInfo.getName());
         Glide.with(mContext).load(Constant.getImgUrl(mContext, videoInfo.getId())).into(videoViewHolder.mImgInfo);
         videoViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext,VideoDetailActivity.class);
+                intent.putExtra("videoId",videoInfo.getId());
                 mContext.startActivity(intent);
             }
         });

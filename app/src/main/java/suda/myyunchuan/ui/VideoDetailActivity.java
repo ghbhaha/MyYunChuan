@@ -2,7 +2,14 @@ package suda.myyunchuan.ui;
 
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
+
+import com.wefika.flowlayout.FlowLayout;
+
+import java.util.List;
 
 import fm.jiecao.jcvideoplayer_lib.JCVideoPlayer;
 import fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard;
@@ -11,8 +18,9 @@ import suda.myyunchuan.base.BaseActivity;
 import suda.myyunchuan.module.model.VideoDetailInfo;
 import suda.myyunchuan.module.presenter.VideoDetailPresenter;
 import suda.myyunchuan.module.view.VideoDetailView;
+import suda.myyunchuan.util.ScreenUtil;
 
-public class VideoDetailActivity extends BaseActivity<VideoDetailPresenter> implements VideoDetailView{
+public class VideoDetailActivity extends BaseActivity<VideoDetailPresenter> implements VideoDetailView {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,22 +30,21 @@ public class VideoDetailActivity extends BaseActivity<VideoDetailPresenter> impl
         initData();
     }
 
-    public void initWidget(){
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("测试");
+    public void initWidget() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("加载ing");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         jcVideoPlayerStandard = new JCVideoPlayerStandard(this);
         FrameLayout frameLayout = (FrameLayout) findViewById(R.id.content);
         frameLayout.addView(jcVideoPlayerStandard);
-        String url = "http://202.196.222.201//kuuE/687474703A2F2F6D382E6E65746B75752E636F6D2F77772F6E617169656A69322F30332E6D7034.mp4";
-        jcVideoPlayerStandard.setUp(url, JCVideoPlayer.CURRENT_STATE_NORMAL,"");
+        urlContent = (ViewGroup) findViewById(R.id.url_content);
     }
 
     @Override
     public void initData() {
         super.initData();
-        mvpPerenter.getVideoDetailInfo(this,"");
+        mvpPerenter.getVideoDetailInfo(this, getIntent().getStringExtra("videoId"));
     }
 
     @Override
@@ -46,10 +53,38 @@ public class VideoDetailActivity extends BaseActivity<VideoDetailPresenter> impl
     }
 
     @Override
-    public void showVideoDetailInfo(VideoDetailInfo videoDetailInfo) {
+    public void showVideoDetailInfo(final VideoDetailInfo videoDetailInfo) {
         jcVideoPlayerStandard.post(new Runnable() {
             @Override
             public void run() {
+                if (videoDetailInfo != null) {
+                    toolbar.setTitle(videoDetailInfo.getName());
+                    List<String> urls = videoDetailInfo.getUrls();
+                    int width = ScreenUtil.getScreenWidth(VideoDetailActivity.this) / 4;
+
+
+                    if (urls != null && urls.size() > 0) {
+                        int i = 1;
+                        for (final String url : urls) {
+                            Button button = new Button(VideoDetailActivity.this);
+                            FlowLayout.LayoutParams layoutParams = new FlowLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            layoutParams.width = width;
+                            button.setText("第" + i + "集");
+                            button.setLayoutParams(layoutParams);
+                            i++;
+                            button.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    jcVideoPlayerStandard.setUp(url, JCVideoPlayer.CURRENT_STATE_NORMAL, videoDetailInfo.getName());
+                                    jcVideoPlayerStandard.startVideo();
+                                }
+                            });
+                            urlContent.addView(button);
+                        }
+                        jcVideoPlayerStandard.setUp(urls.get(0), JCVideoPlayer.CURRENT_STATE_NORMAL, videoDetailInfo.getName());
+                    }
+
+                }
 
             }
         });
@@ -62,11 +97,14 @@ public class VideoDetailActivity extends BaseActivity<VideoDetailPresenter> impl
         }
         super.onBackPressed();
     }
+
     @Override
     protected void onPause() {
         super.onPause();
         JCVideoPlayer.releaseAllVideos();
     }
 
+    private Toolbar toolbar;
+    private ViewGroup urlContent;
     private JCVideoPlayerStandard jcVideoPlayerStandard;
 }
