@@ -10,7 +10,7 @@ import android.text.TextUtils;
 public class Constant {
 
     private static String URL_FORMAT_LOCATION = "bar-list-%d_%d_adddate.xml&typ=m";
-    private static String URL_FORMAT_ALL = "&xml=bar-list-30_adddate.xml&typ=m";
+    private static String URL_FORMAT_ALL = "&xml=bar-list-%d_adddate.xml&typ=m";
     private static int ALL_MASK = -99;
 
 
