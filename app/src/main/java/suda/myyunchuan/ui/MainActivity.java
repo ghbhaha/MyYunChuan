@@ -20,6 +20,7 @@ import suda.myyunchuan.base.BaseActivity;
 import suda.myyunchuan.module.model.VideoInfo;
 import suda.myyunchuan.module.presenter.MainPresenter;
 import suda.myyunchuan.module.view.MainView;
+import suda.myyunchuan.util.Constant;
 
 public class MainActivity extends BaseActivity<MainPresenter>
         implements NavigationView.OnNavigationItemSelectedListener, MainView {
@@ -28,6 +29,7 @@ public class MainActivity extends BaseActivity<MainPresenter>
     private List<VideoInfo> mVideoInfos = new ArrayList<>();
     private HomeAdapter homeAdapter;
     private int pageIndex = 1;
+    private Constant.VideoType videoType = Constant.VideoType.DIANYING;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +51,7 @@ public class MainActivity extends BaseActivity<MainPresenter>
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mvpPerenter.getAllList(mActivity);
+                mvpPerenter.getAllList(mActivity, videoType);
             }
         });
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -64,12 +66,12 @@ public class MainActivity extends BaseActivity<MainPresenter>
     @Override
     public void initData() {
         super.initData();
-        mvpPerenter.getAllList(this);
+        mvpPerenter.initAllList(this, videoType);
     }
 
-    private void initRcMain(){
-        mRcMain.setLayoutManager(new GridLayoutManager(this,2));
-        homeAdapter = new HomeAdapter(mVideoInfos,this);
+    private void initRcMain() {
+        mRcMain.setLayoutManager(new GridLayoutManager(this, 2));
+        homeAdapter = new HomeAdapter(mVideoInfos, this);
         mRcMain.setAdapter(homeAdapter);
     }
 
@@ -95,13 +97,20 @@ public class MainActivity extends BaseActivity<MainPresenter>
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            // Handle the camera action
+            videoType = Constant.VideoType.DAINSHIJU;
+            mvpPerenter.initAllList(this, videoType);
         } else if (id == R.id.nav_gallery) {
-
+            videoType = Constant.VideoType.DIANYING;
+            mvpPerenter.initAllList(this, videoType);
         } else if (id == R.id.nav_slideshow) {
-
+            videoType = Constant.VideoType.ZONGYI;
+            mvpPerenter.initAllList(this, videoType);
         } else if (id == R.id.nav_manage) {
-
+            videoType = Constant.VideoType.JILUPIAN;
+            mvpPerenter.initAllList(this, videoType);
+        } else if (id == R.id.nav_comic) {
+            videoType = Constant.VideoType.DONGMAN;
+            mvpPerenter.initAllList(this, videoType);
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {

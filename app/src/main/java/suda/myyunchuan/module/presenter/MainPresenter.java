@@ -28,14 +28,19 @@ import suda.myyunchuan.util.Constant;
 public class MainPresenter extends BasePersenter<MainView> {
 
     private final static String TAG = "MainPresenter";
-    private int pageIndex=1;
-
+    private int pageIndex = 1;
     public MainPresenter(MainView mainView) {
         attachView(mainView);
     }
 
-    public void getAllList(Context context) {
-        String url = Constant.getUrlFormat(context,Constant.VideoType.DIANYING, Constant.FilmTypeDetail.ALL, null, pageIndex);
+
+    public void initAllList(Context context, Constant.VideoType videoType) {
+        pageIndex = 1;
+        getAllList(context, videoType);
+    }
+
+    public void getAllList(Context context, Constant.VideoType videoType) {
+        String url = Constant.getUrlFormat(context, videoType, Constant.FilmTypeDetail.ALL, Constant.TvTypeDetail.ALL, pageIndex);
         Request request = new Request.Builder().url(url).build();
         OkHttpClient okHttpClient = MyApplication.getOkHttpClient();
         Call call = okHttpClient.newCall(request);
@@ -62,7 +67,7 @@ public class MainPresenter extends BasePersenter<MainView> {
     private List<VideoInfo> parseFilmInfo(String xmlStr) throws Exception {
         List<VideoInfo> videoInfos = new ArrayList<>();
 
-        xmlStr = xmlStr.replace("<l><a>165</a></l>","");
+        xmlStr = xmlStr.replace("<l><a>165</a></l>", "");
         XmlPullParser xrp = Xml.newPullParser();
         xrp.setInput(new ByteArrayInputStream(xmlStr.getBytes()), "UTF-8");
         VideoInfo videoInfo = null;
@@ -78,9 +83,9 @@ public class MainPresenter extends BasePersenter<MainView> {
                         break;
                     case XmlPullParser.START_TAG: {
                         String tagName = xrp.getName();
-                        if ("m".equals(tagName)){
+                        if ("m".equals(tagName)) {
                             videoInfo = new VideoInfo();
-                        }else if ("a".equals(tagName)) {
+                        } else if ("a".equals(tagName)) {
                             videoInfo.setName(xrp.nextText());
                         } else if ("b".equals(tagName)) {
                             videoInfo.setId(xrp.nextText());
