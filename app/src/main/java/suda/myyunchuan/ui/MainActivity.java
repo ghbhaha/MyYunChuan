@@ -1,7 +1,12 @@
 package suda.myyunchuan.ui;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -30,6 +35,7 @@ public class MainActivity extends BaseActivity<MainPresenter>
     private HomeAdapter homeAdapter;
     private Constant.VideoType videoType = Constant.VideoType.DAINSHIJU;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private final static int CODE_FOR_WRITE_PERMISSION = 111;
 
     GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
     EndlessRecyclerOnScrollListener endlessRecyclerOnScrollListener = new EndlessRecyclerOnScrollListener(gridLayoutManager) {
@@ -43,6 +49,9 @@ public class MainActivity extends BaseActivity<MainPresenter>
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            getPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
         initWidget();
         initData();
     }
@@ -162,4 +171,26 @@ public class MainActivity extends BaseActivity<MainPresenter>
             }
         });
     }
+
+    private void getPermission(final String... permissions) {
+        for (String permission : permissions) {
+            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, permissions, CODE_FOR_WRITE_PERMISSION);
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == CODE_FOR_WRITE_PERMISSION) {
+            if (permissions[0].equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            } else {
+                //用户不同意，自行处理即可
+                finish();
+            }
+        }
+    }
+
 }
