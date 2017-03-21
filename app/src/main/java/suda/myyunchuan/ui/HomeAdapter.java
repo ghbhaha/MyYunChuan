@@ -26,14 +26,14 @@ public class HomeAdapter extends RecyclerView.Adapter {
     private Context mContext;
 
 
-    public HomeAdapter(List<VideoInfo> videoInfos, Context context){
+    public HomeAdapter(List<VideoInfo> videoInfos, Context context) {
         mVideoInfos = videoInfos;
         mContext = context;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new VideoViewHolder(View.inflate(mContext,R.layout.item_vedio,null));
+        return new VideoViewHolder(View.inflate(mContext, R.layout.item_vedio, null));
     }
 
     @Override
@@ -45,8 +45,8 @@ public class HomeAdapter extends RecyclerView.Adapter {
         videoViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mContext,VideoDetailActivity.class);
-                intent.putExtra("videoId",videoInfo.getId());
+                Intent intent = new Intent(mContext, VideoDetailActivity.class);
+                intent.putExtra("videoId", videoInfo.getId());
                 mContext.startActivity(intent);
             }
         });

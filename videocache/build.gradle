@@ -37,8 +37,7 @@ idea {
 
 dependencies {
     compile 'org.slf4j:slf4j-android:1.7.21'
-    compile 'com.squareup.okhttp3:okhttp:3.6.0'
-
+    provided 'com.squareup.okhttp3:okhttp:3.6.0'
 }
 
 publish {

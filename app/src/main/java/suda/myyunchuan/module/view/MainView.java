@@ -11,5 +11,5 @@ import suda.myyunchuan.module.model.VideoInfo;
 
 public interface MainView extends BaseView{
 
-    void showList(List<VideoInfo> videoInfos);
+    void showList(List<VideoInfo> videoInfos,boolean isRefrsh);
 }

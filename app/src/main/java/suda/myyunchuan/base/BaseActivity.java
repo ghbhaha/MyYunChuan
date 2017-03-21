@@ -12,7 +12,7 @@ import android.widget.Toast;
  * Created by guhaibo on 2017/3/19.
  */
 
-public abstract class BaseActivity<P extends BasePersenter> extends AppCompatActivity {
+public abstract class BaseActivity<P extends BasePersenter> extends AppCompatActivity implements BaseView{
 
     protected P mvpPerenter;
     public Activity mActivity;
@@ -61,12 +61,22 @@ public abstract class BaseActivity<P extends BasePersenter> extends AppCompatAct
         dismissProgressDialog();
     }
 
-    public void toastShow(int resId) {
-        Toast.makeText(mActivity, resId, Toast.LENGTH_SHORT).show();
+    public void toastShow(final int resId) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(mActivity, resId, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    public void toastShow(String resId) {
-        Toast.makeText(mActivity, resId, Toast.LENGTH_SHORT).show();
+    public void toastShow(final String resId) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(mActivity, resId, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public ProgressDialog showProgressDialog() {

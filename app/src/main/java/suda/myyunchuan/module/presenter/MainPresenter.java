@@ -9,7 +9,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -41,7 +43,9 @@ public class MainPresenter extends BasePersenter<MainView> {
 
     public void getAllList(Context context, Constant.VideoType videoType) {
         String url = Constant.getUrlFormat(context, videoType, Constant.FilmTypeDetail.ALL, Constant.TvTypeDetail.ALL, pageIndex);
-        Request request = new Request.Builder().url(url).build();
+        Request request = new Request.Builder().url(url)
+                .cacheControl(new CacheControl.Builder().maxAge(5 * 60, TimeUnit.SECONDS).build())
+                .build();
         OkHttpClient okHttpClient = MyApplication.getOkHttpClient();
         Call call = okHttpClient.newCall(request);
         mvpView.showLoading();
@@ -49,16 +53,18 @@ public class MainPresenter extends BasePersenter<MainView> {
             @Override
             public void onFailure(Call call, IOException e) {
                 mvpView.hideLoading();
+                mvpView.toastShow("加载失败，请重试");
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 mvpView.hideLoading();
                 try {
+                    mvpView.showList(parseFilmInfo(new String(response.body().bytes(), "gb2312")), pageIndex == 1);
                     pageIndex++;
-                    mvpView.showList(parseFilmInfo(new String(response.body().bytes(), "gb2312")));
                 } catch (Exception e) {
                     e.printStackTrace();
+                    mvpView.toastShow("加载失败，请重试");
                 }
             }
         });

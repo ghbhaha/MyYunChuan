@@ -1,16 +1,15 @@
 package suda.myyunchuan.ui;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +20,7 @@ import suda.myyunchuan.module.model.VideoInfo;
 import suda.myyunchuan.module.presenter.MainPresenter;
 import suda.myyunchuan.module.view.MainView;
 import suda.myyunchuan.util.Constant;
+import suda.myyunchuan.util.EndlessRecyclerOnScrollListener;
 
 public class MainActivity extends BaseActivity<MainPresenter>
         implements NavigationView.OnNavigationItemSelectedListener, MainView {
@@ -28,8 +28,16 @@ public class MainActivity extends BaseActivity<MainPresenter>
     private RecyclerView mRcMain;
     private List<VideoInfo> mVideoInfos = new ArrayList<>();
     private HomeAdapter homeAdapter;
-    private int pageIndex = 1;
-    private Constant.VideoType videoType = Constant.VideoType.DIANYING;
+    private Constant.VideoType videoType = Constant.VideoType.DAINSHIJU;
+    private SwipeRefreshLayout swipeRefreshLayout;
+
+    GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
+    EndlessRecyclerOnScrollListener endlessRecyclerOnScrollListener = new EndlessRecyclerOnScrollListener(gridLayoutManager) {
+        @Override
+        public void onLoadMore(int currentPage) {
+            mvpPerenter.getAllList(MainActivity.this, videoType);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,16 +50,24 @@ public class MainActivity extends BaseActivity<MainPresenter>
     @Override
     public void initWidget() {
         super.initWidget();
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         mRcMain = (RecyclerView) findViewById(R.id.rv_main);
         initRcMain();
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
+        swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light, android.R.color.holo_orange_light, android.R.color.holo_red_light);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public void onClick(View view) {
-                mvpPerenter.getAllList(mActivity, videoType);
+            public void onRefresh() {
+                mvpPerenter.initAllList(MainActivity.this, videoType);
+            }
+        });
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(true);
             }
         });
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -70,9 +86,10 @@ public class MainActivity extends BaseActivity<MainPresenter>
     }
 
     private void initRcMain() {
-        mRcMain.setLayoutManager(new GridLayoutManager(this, 2));
+        mRcMain.setLayoutManager(gridLayoutManager);
         homeAdapter = new HomeAdapter(mVideoInfos, this);
         mRcMain.setAdapter(homeAdapter);
+        mRcMain.addOnScrollListener(endlessRecyclerOnScrollListener);
     }
 
     @Override
@@ -123,14 +140,25 @@ public class MainActivity extends BaseActivity<MainPresenter>
     }
 
     @Override
-    public void showList(final List<VideoInfo> videoInfos) {
-
+    public void showList(final List<VideoInfo> videoInfos, final boolean isRefresh) {
         mRcMain.post(new Runnable() {
             @Override
             public void run() {
-                mVideoInfos.clear();
+                if (isRefresh) {
+                    endlessRecyclerOnScrollListener.init();
+                    mVideoInfos.clear();
+                }
                 mVideoInfos.addAll(videoInfos);
                 homeAdapter.notifyDataSetChanged();
+                if (isRefresh)
+                    mRcMain.smoothScrollToPosition(0);
+
+                swipeRefreshLayout.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                });
             }
         });
     }

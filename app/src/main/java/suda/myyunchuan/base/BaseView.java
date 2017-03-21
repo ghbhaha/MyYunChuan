@@ -8,5 +8,9 @@ public interface BaseView {
     void showLoading();
 
     void hideLoading();
+
+    void toastShow(int resId);
+
+    void toastShow(String resId);
 }
 
