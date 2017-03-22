@@ -61,8 +61,6 @@ public class VideoDetailActivity extends BaseActivity<VideoDetailPresenter> impl
                     toolbar.setTitle(videoDetailInfo.getName());
                     List<String> urls = videoDetailInfo.getUrls();
                     int width = ScreenUtil.getScreenWidth(VideoDetailActivity.this) / 4;
-
-
                     if (urls != null && urls.size() > 0) {
                         int i = 1;
                         for (final String url : urls) {

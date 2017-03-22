@@ -81,7 +81,8 @@ public class MainPresenter extends BasePersenter<MainView> {
         try {
             int eventType = -1;
             eventType = xrp.getEventType();
-            while (eventType != XmlPullParser.END_DOCUMENT) {
+            boolean end = false;
+            while (eventType != XmlPullParser.END_DOCUMENT && !end) {
                 switch (eventType) {
                     case XmlPullParser.START_DOCUMENT:
                         break;
@@ -89,6 +90,9 @@ public class MainPresenter extends BasePersenter<MainView> {
                         break;
                     case XmlPullParser.START_TAG: {
                         String tagName = xrp.getName();
+                        if ("l".equals(tagName)){
+                            end = true;
+                        }
                         if ("m".equals(tagName)) {
                             videoInfo = new VideoInfo();
                         } else if ("a".equals(tagName)) {

@@ -257,7 +257,8 @@ public class JCMediaManager implements TextureView.SurfaceTextureListener, Media
     public HttpProxyCacheServer getProxy(Context context) {
         if (httpProxyCacheServer == null)
             httpProxyCacheServer = new HttpProxyCacheServer.Builder(context.getApplicationContext())
-                    .maxCacheSize(200 * 1024 * 1024) //200M
+                   // .maxCacheSize(200 * 1024 * 1024) //200M 200 * 1024 * 1024
+                    .maxCacheFilesCount(10)
                     .cacheDirectory(getVideoCache(context))
                     .build();
         return httpProxyCacheServer;

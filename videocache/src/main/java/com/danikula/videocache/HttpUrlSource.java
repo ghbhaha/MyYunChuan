@@ -69,9 +69,9 @@ public class HttpUrlSource implements Source {
     public void open(int offset) throws ProxyCacheException {
         try {
             Response response = openConnection(offset);
-            String mime = "";
-            if (response.body().contentType() != null)
-                mime = response.body().contentType().toString();
+            String mime = "video/mp4";
+//            if (response.body().contentType() != null)
+//                mime = response.body().contentType().toString();
             inputStream = new BufferedInputStream(response.body().byteStream(), DEFAULT_BUFFER_SIZE);
             int length = readSourceAvailableBytes(response, offset);
             this.sourceInfo = new SourceInfo(sourceInfo.url, length, mime);
@@ -120,9 +120,9 @@ public class HttpUrlSource implements Source {
         try {
             response = openConnectionForHeader();
             int length = (int) response.body().contentLength();
-            String mime = "";
-            if (response.body().contentType() != null)
-                mime = response.body().contentType().toString();
+            String mime = "video/mp4";
+//            if (response.body().contentType() != null)
+//                mime = response.body().contentType().toString();
             this.sourceInfo = new SourceInfo(sourceInfo.url, length, mime);
             this.sourceInfoStorage.put(sourceInfo.url, sourceInfo);
             LOG.debug("Source info fetched: " + sourceInfo);
