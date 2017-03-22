@@ -72,8 +72,6 @@ public class MainPresenter extends BasePersenter<MainView> {
 
     private List<VideoInfo> parseFilmInfo(String xmlStr) throws Exception {
         List<VideoInfo> videoInfos = new ArrayList<>();
-
-        xmlStr = xmlStr.replace("<l><a>165</a></l>", "");
         XmlPullParser xrp = Xml.newPullParser();
         xrp.setInput(new ByteArrayInputStream(xmlStr.getBytes()), "UTF-8");
         VideoInfo videoInfo = null;
