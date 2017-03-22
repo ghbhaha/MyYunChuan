@@ -27,7 +27,9 @@ public class Constant {
     }
 
     public static String getBaseUrl(Context context) {
-        return SPUtils.get(context, "ip", "http://202.196.222.201").toString();
+        //218.29.109.229
+        //202.196.222.201
+        return SPUtils.get(context, "ip", "http://218.29.109.229").toString();
     }
 
     public static String formatDownUrl(Context context, String orgUrl) {
@@ -55,7 +57,7 @@ public class Constant {
 
         if (pageIndex == 0)
             pageIndex = 1;
-        int start = (pageIndex - 1) * 13;
+        int start = (pageIndex - 1) * 12;
         int end = start + 12;
         return getBaseUrl(context) + "/readxml.asp?num1=" + start + "&num2=" + end + endUrl;
     }
