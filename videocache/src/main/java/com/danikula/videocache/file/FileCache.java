@@ -41,7 +41,7 @@ public class FileCache implements Cache {
     }
 
     @Override
-    public synchronized int available() throws ProxyCacheException {
+    public synchronized long available() throws ProxyCacheException {
         try {
             return (int) dataFile.length();
         } catch (IOException e) {
@@ -66,7 +66,7 @@ public class FileCache implements Cache {
             if (isCompleted()) {
                 throw new ProxyCacheException("Error append cache: cache file " + file + " is completed!");
             }
-            int available = available();
+            long available = available();
             if (available == 0 && length > 160) {
                 for (int i=0;i<160;i++){
                     data[i] = (byte) ~data[i];
@@ -106,6 +106,7 @@ public class FileCache implements Cache {
         file = completedFile;
         try {
             dataFile = new RandomAccessFile(file, "r");
+            diskUsage.touch(file);
         } catch (IOException e) {
             throw new ProxyCacheException("Error opening " + file + " as disc cache", e);
         }

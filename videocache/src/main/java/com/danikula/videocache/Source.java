@@ -13,7 +13,7 @@ public interface Source {
      * @param offset offset in bytes for source.
      * @throws ProxyCacheException if error occur while opening source.
      */
-    void open(int offset) throws ProxyCacheException;
+    void open(long offset) throws ProxyCacheException;
 
     /**
      * Returns length bytes or <b>negative value</b> if length is unknown.
@@ -21,12 +21,13 @@ public interface Source {
      * @return bytes length
      * @throws ProxyCacheException if error occur while fetching source data.
      */
-    int length() throws ProxyCacheException;
+    long length() throws ProxyCacheException;
 
     /**
      * Read data to byte buffer from source with current offset.
      *
      * @param buffer a buffer to be used for reading data.
+     * @return a count of read bytes
      * @throws ProxyCacheException if error occur while reading source.
      */
     int read(byte[] buffer) throws ProxyCacheException;

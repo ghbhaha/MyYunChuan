@@ -58,7 +58,7 @@ public class HttpUrlSource implements Source {
     }
 
     @Override
-    public synchronized int length() throws ProxyCacheException {
+    public synchronized long length() throws ProxyCacheException {
         if (sourceInfo.length == Integer.MIN_VALUE) {
             fetchContentInfo();
         }
@@ -66,14 +66,14 @@ public class HttpUrlSource implements Source {
     }
 
     @Override
-    public void open(int offset) throws ProxyCacheException {
+    public void open(long offset) throws ProxyCacheException {
         try {
             Response response = openConnection(offset);
             String mime = "video/mp4";
 //            if (response.body().contentType() != null)
 //                mime = response.body().contentType().toString();
             inputStream = new BufferedInputStream(response.body().byteStream(), DEFAULT_BUFFER_SIZE);
-            int length = readSourceAvailableBytes(response, offset);
+            long length = readSourceAvailableBytes(response, offset);
             this.sourceInfo = new SourceInfo(sourceInfo.url, length, mime);
             this.sourceInfoStorage.put(sourceInfo.url, sourceInfo);
         } catch (IOException e) {
@@ -81,9 +81,9 @@ public class HttpUrlSource implements Source {
         }
     }
 
-    private int readSourceAvailableBytes(Response response, int offset) throws IOException {
+    private long readSourceAvailableBytes(Response response, long offset) throws IOException {
         int responseCode = response.code();
-        int contentLength = (int) response.body().contentLength();
+        long contentLength = response.body().contentLength();
         return responseCode == HTTP_OK ? contentLength
                 : responseCode == HTTP_PARTIAL ? contentLength + offset : sourceInfo.length;
     }
@@ -119,7 +119,7 @@ public class HttpUrlSource implements Source {
         Response response = null;
         try {
             response = openConnectionForHeader();
-            int length = (int) response.body().contentLength();
+            long length = response.body().contentLength();
             String mime = "video/mp4";
 //            if (response.body().contentType() != null)
 //                mime = response.body().contentType().toString();
@@ -156,7 +156,7 @@ public class HttpUrlSource implements Source {
         return response;
     }
 
-    private Response openConnection(int offset) throws IOException, ProxyCacheException {
+    private Response openConnection(long offset) throws IOException, ProxyCacheException {
         Response response;
         boolean redirected = false;
         String url = this.sourceInfo.url;

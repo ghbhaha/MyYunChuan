@@ -8,6 +8,7 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.Locale;
 
 import static com.danikula.videocache.ProxyCacheUtils.DEFAULT_BUFFER_SIZE;
 
@@ -48,9 +49,9 @@ class HttpProxyCache extends ProxyCache {
     }
 
     private boolean isUseCache(GetRequest request) throws ProxyCacheException {
-        int sourceLength = source.length();
+        long sourceLength = source.length();
         boolean sourceLengthKnown = sourceLength > 0;
-        int cacheAvailable = cache.available();
+        long cacheAvailable = cache.available();
         // do not use cache for partial requests which too far from available cache. It seems user seek video.
         return !sourceLengthKnown || !request.partial || request.rangeOffset <= cacheAvailable + sourceLength * NO_CACHE_BARRIER;
     }
@@ -58,16 +59,16 @@ class HttpProxyCache extends ProxyCache {
     private String newResponseHeaders(GetRequest request) throws IOException, ProxyCacheException {
         String mime = source.getMime();
         boolean mimeKnown = !TextUtils.isEmpty(mime);
-        int length = cache.isCompleted() ? cache.available() : source.length();
+        long length = cache.isCompleted() ? cache.available() : source.length();
         boolean lengthKnown = length >= 0;
         long contentLength = request.partial ? length - request.rangeOffset : length;
         boolean addRange = lengthKnown && request.partial;
         return new StringBuilder()
                 .append(request.partial ? "HTTP/1.1 206 PARTIAL CONTENT\n" : "HTTP/1.1 200 OK\n")
                 .append("Accept-Ranges: bytes\n")
-                .append(lengthKnown ? String.format("Content-Length: %d\n", contentLength) : "")
-                .append(addRange ? String.format("Content-Range: bytes %d-%d/%d\n", request.rangeOffset, length - 1, length) : "")
-                .append(mimeKnown ? String.format("Content-Type: %s\n", mime) : "")
+                .append(lengthKnown ? format("Content-Length: %d\n", contentLength) : "")
+                .append(addRange ? format("Content-Range: bytes %d-%d/%d\n", request.rangeOffset, length - 1, length) : "")
+                .append(mimeKnown ? format("Content-Type: %s\n", mime) : "")
                 .append("\n") // headers end
                 .toString();
     }
@@ -96,6 +97,10 @@ class HttpProxyCache extends ProxyCache {
         } finally {
             newSourceNoCache.close();
         }
+    }
+
+    private String format(String pattern, Object... args) {
+        return String.format(Locale.US, pattern, args);
     }
 
     @Override

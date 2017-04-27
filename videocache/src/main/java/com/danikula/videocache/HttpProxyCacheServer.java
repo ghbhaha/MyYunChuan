@@ -73,6 +73,7 @@ public class HttpProxyCacheServer {
             InetAddress inetAddress = InetAddress.getByName(PROXY_HOST);
             this.serverSocket = new ServerSocket(0, 8, inetAddress);
             this.port = serverSocket.getLocalPort();
+            IgnoreHostProxySelector.install(PROXY_HOST, port);
             CountDownLatch startSignal = new CountDownLatch(1);
             this.waitConnectionThread = new Thread(new WaitRequestsRunnable(startSignal));
             this.waitConnectionThread.start();
@@ -411,6 +412,17 @@ public class HttpProxyCacheServer {
          */
         public Builder maxCacheFilesCount(int count) {
             this.diskUsage = new TotalCountLruDiskUsage(count);
+            return this;
+        }
+
+        /**
+         * Set custom DiskUsage logic for handling when to keep or clean cache.
+         *
+         * @param diskUsage a disk usage strategy, cant be {@code null}.
+         * @return a builder.
+         */
+        public Builder diskUsage(DiskUsage diskUsage) {
+            this.diskUsage = checkNotNull(diskUsage);
             return this;
         }
 
